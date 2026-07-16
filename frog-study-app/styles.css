@@ -86,14 +86,8 @@ button {
   font-size: 28px;
 }
 
-.auth-copy {
-  margin: 8px 0 16px;
-  color: var(--muted);
-  line-height: 1.55;
-}
-
 .auth-notice {
-  margin: 0 0 18px;
+  margin: 12px 0 18px;
   padding: 12px;
   background: #f6f8f4;
   border: 1px solid var(--line);
