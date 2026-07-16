@@ -51,6 +51,7 @@ function smallThumbUrl(url) {
 }
 
 function hasGuangdongDistribution(item) {
+  if (typeof item.guangdongDistribution === "boolean") return item.guangdongDistribution;
   const distribution = item.distribution || "";
   if (distribution.includes("广东")) return true;
 
@@ -74,6 +75,10 @@ function hasGuangdongDistribution(item) {
   ];
   const excludesGuangdong = /除[^；。]*广东/.test(distribution);
   return !excludesGuangdong && [...broadChinaPatterns, ...southChinaPatterns].some((pattern) => distribution.includes(pattern));
+}
+
+function taxonomyNoteTemplate(item) {
+  return item.taxonomyNote ? `<div class="taxonomy-note">${item.taxonomyNote}</div>` : "";
 }
 
 function matchesRegion(item) {
@@ -172,6 +177,7 @@ function cardTemplate(item) {
           <span class="tag">${item.genus}</span>
           ${mastered ? `<span class="tag">已掌握</span>` : ""}
         </div>
+        ${taxonomyNoteTemplate(item)}
         <p class="feature">${item.feature || "暂无鉴别特征"}</p>
         <div class="card-actions">
           <span class="media-count">${item.photos.length} 图 · ${item.audios.length} 声</span>
@@ -261,6 +267,7 @@ function openDetail(spid) {
         <span class="tag">${item.family} ${item.familyLatin}</span>
         <span class="tag">${item.genus} ${item.genusLatin}</span>
       </div>
+      ${taxonomyNoteTemplate(item)}
       <div class="card-actions">
         <button class="pill-button" data-action="master" data-spid="${item.spid}">
           ${state.mastered.has(item.spid) ? "取消掌握" : "标记已掌握"}

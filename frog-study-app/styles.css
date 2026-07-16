@@ -304,6 +304,18 @@ main {
   font-weight: 700;
 }
 
+.taxonomy-note {
+  margin: -2px 0 8px;
+  padding: 7px 9px;
+  border: 1px solid #f0bf5a;
+  border-radius: 7px;
+  background: #fff4d7;
+  color: #6f4b00;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
 .feature {
   display: -webkit-box;
   margin: 0 0 8px;
