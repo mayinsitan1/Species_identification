@@ -46,6 +46,10 @@ function textIncludes(value, query) {
   return (value || "").toLowerCase().includes(query);
 }
 
+function smallThumbUrl(url) {
+  return url && url.startsWith("thumbs/") ? url.replace("thumbs/", "thumbs-small/") : url;
+}
+
 function hasGuangdongDistribution(item) {
   const distribution = item.distribution || "";
   if (distribution.includes("广东")) return true;
@@ -153,7 +157,7 @@ function cardTemplate(item) {
   return `
     <article class="species-card" data-spid="${item.spid}">
       <div class="cover">
-        ${cover ? `<img loading="lazy" src="${cover}" alt="${item.cname}">` : ""}
+        ${cover ? `<img loading="lazy" decoding="async" src="${smallThumbUrl(cover)}" alt="${item.cname}">` : ""}
       </div>
       <div class="species-main">
         <div class="species-title">
@@ -508,10 +512,7 @@ async function shareApp() {
 }
 
 function uniqueThumbnailUrls() {
-  return [...new Set(FROG_DATA.species.flatMap((item) => [
-    item.cover,
-    ...item.photos.map((photo) => photo.thumb).filter(Boolean),
-  ]).filter(Boolean))];
+  return [...new Set(FROG_DATA.species.map((item) => smallThumbUrl(item.cover)).filter(Boolean))];
 }
 
 function runWhenIdle(task) {
@@ -526,7 +527,7 @@ async function warmOfflineThumbnails() {
   if (!("caches" in window)) return;
   const thumbUrls = uniqueThumbnailUrls();
   try {
-    const cache = await caches.open("frog-study-media-v1");
+    const cache = await caches.open("frog-study-media-v2");
     const pending = [];
     for (const url of thumbUrls) {
       const request = new Request(url);
