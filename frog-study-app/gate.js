@@ -67,7 +67,7 @@ if (chinaDateNumber() > SUNSET_DATE) {
       return;
     }
     if (input.value.trim() !== todayPassword()) {
-      showError("密码不正确。请输入当天日期，例如 20260716。");
+      showError("密码不正确。请输入当天日期。");
       return;
     }
     sessionStorage.setItem(AUTH_STORAGE_KEY, todayPassword());
