@@ -2,6 +2,8 @@ const AUTH_STORAGE_KEY = "frog-study-auth-date";
 const SUNSET_DATE = 20260720;
 
 const gate = document.querySelector("#authGate");
+const appShell = document.querySelector(".app-shell");
+const detailDialog = document.querySelector("#detailDialog");
 const form = document.querySelector("#authForm");
 const input = document.querySelector("#authPassword");
 const message = document.querySelector("#authMessage");
@@ -32,6 +34,8 @@ function loadScript(src) {
 }
 
 async function unlockApp() {
+  appShell.hidden = false;
+  detailDialog.hidden = false;
   document.body.classList.remove("auth-pending");
   gate.hidden = true;
   await loadScript("data.js");
