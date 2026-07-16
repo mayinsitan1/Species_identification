@@ -1,4 +1,4 @@
-const CACHE_NAME = "species-identification-v2";
+const CACHE_NAME = "species-identification-v3";
 const MEDIA_CACHE_NAME = "frog-study-media-v2";
 const CORE_ASSETS = [
   "./",
@@ -6,6 +6,7 @@ const CORE_ASSETS = [
   "./frog-study-app/",
   "./frog-study-app/index.html",
   "./frog-study-app/styles.css",
+  "./frog-study-app/gate.js",
   "./frog-study-app/app.js",
   "./frog-study-app/data.js",
   "./frog-study-app/manifest.webmanifest",

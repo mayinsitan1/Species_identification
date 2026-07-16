@@ -8,7 +8,23 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="auth-pending">
+  <section class="auth-gate" id="authGate" aria-label="访问验证">
+    <div class="auth-card">
+      <p class="eyebrow">实习参考</p>
+      <h1>无尾两栖类速学</h1>
+      <p class="auth-copy">请输入当天日期密码后进入。</p>
+      <form id="authForm" class="auth-form">
+        <label>
+          <span>访问密码</span>
+          <input id="authPassword" type="password" inputmode="numeric" autocomplete="off" placeholder="例如 20260716">
+        </label>
+        <button class="pill-button" type="submit">进入</button>
+      </form>
+      <p class="auth-message" id="authMessage" role="status"></p>
+    </div>
+  </section>
+
   <div class="app-shell">
     <header class="topbar">
       <div>
@@ -94,7 +110,6 @@
     </article>
   </dialog>
 
-  <script src="data.js"></script>
-  <script src="app.js"></script>
+  <script src="gate.js"></script>
 </body>
 </html>
