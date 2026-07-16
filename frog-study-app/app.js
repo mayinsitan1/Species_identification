@@ -1,6 +1,6 @@
 const state = {
   query: "",
-  region: "全部",
+  region: "在广东有分布",
   family: "全部",
   activeView: "browseView",
   quizMode: "audio",
@@ -129,9 +129,9 @@ function renderStats() {
 function renderFilters() {
   const guangdongCount = FROG_DATA.species.filter(hasGuangdongDistribution).length;
   const regions = [
-    { name: "全部", count: FROG_DATA.species.length },
     { name: "在广东有分布", count: guangdongCount },
     { name: "在广东无分布", count: FROG_DATA.species.length - guangdongCount },
+    { name: "全部", count: FROG_DATA.species.length },
   ];
   els.regionFilters.innerHTML = regions.map((region) => `
     <button class="chip ${state.region === region.name ? "active" : ""}" data-region="${region.name}">
