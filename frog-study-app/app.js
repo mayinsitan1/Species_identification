@@ -161,7 +161,7 @@ function cardTemplate(item) {
             <h3>${item.cname}</h3>
             <p class="latin">${item.latin}</p>
           </div>
-          <button class="small-toggle ${mastered ? "active" : ""}" data-action="master" data-spid="${item.spid}" aria-label="标记已掌握">已掌握</button>
+          <button class="small-toggle ${mastered ? "active" : ""}" data-action="master" data-spid="${item.spid}" aria-label="${mastered ? "取消掌握" : "标记已掌握"}">${mastered ? "已掌握" : "未掌握"}</button>
         </div>
         <div class="taxonomy">
           <span class="tag">${item.family}</span>
