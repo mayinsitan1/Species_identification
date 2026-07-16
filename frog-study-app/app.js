@@ -2,12 +2,10 @@ const state = {
   query: "",
   region: "全部",
   family: "全部",
-  sortByTaxonomy: true,
   activeView: "browseView",
   quizMode: "audio",
   quiz: null,
   mastered: new Set(JSON.parse(localStorage.getItem("frog-mastered") || "[]")),
-  favorites: new Set(JSON.parse(localStorage.getItem("frog-favorites") || "[]")),
 };
 let offlineWarmupScheduled = false;
 
@@ -23,9 +21,7 @@ const els = {
   speciesList: document.querySelector("#speciesList"),
   familyGroups: document.querySelector("#familyGroups"),
   familySummary: document.querySelector("#familySummary"),
-  sortToggle: document.querySelector("#sortToggle"),
   shareButton: document.querySelector("#shareButton"),
-  randomButton: document.querySelector("#randomButton"),
   masteredCount: document.querySelector("#masteredCount"),
   speciesCount: document.querySelector("#speciesCount"),
   photoCount: document.querySelector("#photoCount"),
@@ -39,7 +35,6 @@ const els = {
 
 function saveProgress() {
   localStorage.setItem("frog-mastered", JSON.stringify([...state.mastered]));
-  localStorage.setItem("frog-favorites", JSON.stringify([...state.favorites]));
 }
 
 function textIncludes(value, query) {
@@ -117,14 +112,11 @@ function filteredSpecies() {
     return matchesRegionAndFamily(item) && matchQuery;
   });
 
-  if (state.sortByTaxonomy) {
-    list = list.slice().sort((a, b) => {
-      const taxonomy = `${a.familyLatin}|${a.genusLatin}|${a.latin}`;
-      const otherTaxonomy = `${b.familyLatin}|${b.genusLatin}|${b.latin}`;
-      return taxonomy.localeCompare(otherTaxonomy, "en");
-    });
-  }
-  return list;
+  return list.slice().sort((a, b) => {
+    const taxonomy = `${a.familyLatin}|${a.genusLatin}|${a.latin}`;
+    const otherTaxonomy = `${b.familyLatin}|${b.genusLatin}|${b.latin}`;
+    return taxonomy.localeCompare(otherTaxonomy, "en");
+  });
 }
 
 function renderStats() {
@@ -156,7 +148,6 @@ function renderFilters() {
 }
 
 function cardTemplate(item) {
-  const favorite = state.favorites.has(item.spid);
   const mastered = state.mastered.has(item.spid);
   const cover = item.cover || "";
   return `
@@ -170,12 +161,11 @@ function cardTemplate(item) {
             <h3>${item.cname}</h3>
             <p class="latin">${item.latin}</p>
           </div>
-          <button class="small-toggle ${favorite ? "active" : ""}" data-action="favorite" data-spid="${item.spid}" aria-label="收藏">★</button>
+          <button class="small-toggle ${mastered ? "active" : ""}" data-action="master" data-spid="${item.spid}" aria-label="标记已掌握">已掌握</button>
         </div>
         <div class="taxonomy">
           <span class="tag">${item.family}</span>
           <span class="tag">${item.genus}</span>
-          ${mastered ? `<span class="tag">已掌握</span>` : ""}
         </div>
         ${taxonomyNoteTemplate(item)}
         <p class="feature">${item.feature || "暂无鉴别特征"}</p>
@@ -271,9 +261,6 @@ function openDetail(spid) {
       <div class="card-actions">
         <button class="pill-button" data-action="master" data-spid="${item.spid}">
           ${state.mastered.has(item.spid) ? "取消掌握" : "标记已掌握"}
-        </button>
-        <button class="text-button" data-action="favorite" data-spid="${item.spid}">
-          ${state.favorites.has(item.spid) ? "取消收藏" : "收藏"}
         </button>
       </div>
       <div class="detail-grid">
@@ -426,12 +413,6 @@ function handleAction(target) {
   if (action === "open") {
     openDetail(spid);
   }
-  if (action === "favorite") {
-    state.favorites.has(spid) ? state.favorites.delete(spid) : state.favorites.add(spid);
-    saveProgress();
-    renderAll();
-    if (els.detailDialog.open) openDetail(spid);
-  }
   if (action === "master") {
     state.mastered.has(spid) ? state.mastered.delete(spid) : state.mastered.add(spid);
     saveProgress();
@@ -486,17 +467,6 @@ document.addEventListener("click", (event) => {
 els.searchInput.addEventListener("input", (event) => {
   state.query = event.target.value;
   renderSpeciesList();
-});
-
-els.sortToggle.addEventListener("click", () => {
-  state.sortByTaxonomy = !state.sortByTaxonomy;
-  els.sortToggle.textContent = state.sortByTaxonomy ? "按分类排序" : "按原始顺序";
-  renderSpeciesList();
-});
-
-els.randomButton.addEventListener("click", () => {
-  const list = filteredSpecies();
-  openDetail(randomFrom(list.length ? list : FROG_DATA.species).spid);
 });
 
 async function shareApp() {

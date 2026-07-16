@@ -106,24 +106,23 @@ h2 {
 }
 
 .source-notice {
-  margin: 12px 16px 0;
+  margin: 18px 0 10px;
   padding: 12px 13px;
-  background: #fff8df;
-  border: 1px solid #efcf7c;
+  background: rgba(255, 255, 255, 0.74);
+  border: 1px solid var(--line);
   border-radius: 8px;
-  box-shadow: 0 6px 18px rgba(111, 75, 0, 0.08);
 }
 
 .source-notice strong {
   display: block;
   margin-bottom: 5px;
-  color: #6f4b00;
+  color: var(--leaf);
   font-size: 14px;
 }
 
 .source-notice p {
   margin: 0;
-  color: #493b1d;
+  color: var(--muted);
   font-size: 12px;
   line-height: 1.55;
 }
@@ -375,18 +374,22 @@ main {
 }
 
 .small-toggle {
-  width: 34px;
-  height: 34px;
+  flex: 0 0 auto;
+  min-width: 64px;
+  min-height: 32px;
+  padding: 6px 9px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: 7px;
   background: #fff;
   color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .small-toggle.active {
   color: #fff;
-  background: var(--coral);
-  border-color: var(--coral);
+  background: var(--leaf);
+  border-color: var(--leaf);
 }
 
 .family-groups {
