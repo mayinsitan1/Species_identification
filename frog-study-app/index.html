@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#234036">
+  <title>无尾两栖类速学</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">生物学实习</p>
+        <h1>无尾两栖类速学</h1>
+      </div>
+      <button class="icon-button" id="randomButton" aria-label="随机学习">随机</button>
+    </header>
+
+    <section class="search-band" aria-label="搜索与筛选">
+      <label class="search-box">
+        <span>搜索</span>
+        <input id="searchInput" type="search" placeholder="中文名、拉丁名、科、属">
+      </label>
+      <div class="filter-section">
+        <span>地区筛选</span>
+        <div class="filter-scroll" id="regionFilters"></div>
+      </div>
+      <div class="filter-section" id="familyFilterSection">
+        <span>科筛选</span>
+        <div class="filter-scroll" id="familyFilters"></div>
+      </div>
+    </section>
+
+    <main>
+      <section class="stats-strip" aria-label="资料概览">
+        <div><strong id="speciesCount">41</strong><span>物种</span></div>
+        <div><strong id="photoCount">159</strong><span>照片</span></div>
+        <div><strong id="audioCount">69</strong><span>鸣声</span></div>
+        <div><strong id="masteredCount">0</strong><span>已掌握</span></div>
+      </section>
+
+      <section class="view active" id="browseView">
+        <div class="section-head">
+          <h2>物种图鉴</h2>
+          <button class="text-button" id="sortToggle">按分类排序</button>
+        </div>
+        <div class="species-list" id="speciesList"></div>
+      </section>
+
+      <section class="view" id="familiesView">
+        <div class="section-head">
+          <h2>分类速览</h2>
+          <span id="familySummary"></span>
+        </div>
+        <div class="family-groups" id="familyGroups"></div>
+      </section>
+
+      <section class="view" id="quizView">
+        <div class="section-head">
+          <h2>随机小测</h2>
+          <button class="text-button" id="nextQuiz">换一题</button>
+        </div>
+        <div class="segmented-control" aria-label="小测模式">
+          <button class="active" data-quiz-mode="audio">听鸣声辨认</button>
+          <button data-quiz-mode="photo">看图片辨认</button>
+        </div>
+        <article class="quiz-card" id="quizCard"></article>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="主导航">
+      <button class="nav-button active" data-view="browseView">图鉴</button>
+      <button class="nav-button" data-view="familiesView">分类</button>
+      <button class="nav-button" data-view="quizView">小测</button>
+    </nav>
+  </div>
+
+  <dialog class="detail-dialog" id="detailDialog">
+    <article class="detail-panel">
+      <button class="close-button" id="closeDetail" aria-label="关闭">×</button>
+      <div id="detailContent"></div>
+    </article>
+  </dialog>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
