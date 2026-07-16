@@ -23,6 +23,7 @@ const els = {
   familyGroups: document.querySelector("#familyGroups"),
   familySummary: document.querySelector("#familySummary"),
   sortToggle: document.querySelector("#sortToggle"),
+  shareButton: document.querySelector("#shareButton"),
   randomButton: document.querySelector("#randomButton"),
   masteredCount: document.querySelector("#masteredCount"),
   speciesCount: document.querySelector("#speciesCount"),
@@ -486,14 +487,58 @@ els.randomButton.addEventListener("click", () => {
   openDetail(randomFrom(list.length ? list : FROG_DATA.species).spid);
 });
 
+async function shareApp() {
+  const shareData = {
+    title: "无尾两栖类速学",
+    text: "打开无尾两栖类速学网页，学习分类、照片和鸣声。",
+    url: window.location.href,
+  };
+  if (navigator.share) {
+    await navigator.share(shareData);
+    return;
+  }
+  if (navigator.clipboard) {
+    await navigator.clipboard.writeText(window.location.href);
+    els.shareButton.textContent = "已复制";
+    setTimeout(() => {
+      els.shareButton.textContent = "分享";
+    }, 1600);
+  }
+}
+
+async function warmOfflineThumbnails() {
+  if (!("caches" in window)) return;
+  const thumbUrls = [...new Set(FROG_DATA.species.flatMap((item) => [
+    item.cover,
+    ...item.photos.map((photo) => photo.thumb).filter(Boolean),
+  ]).filter(Boolean))];
+  try {
+    const cache = await caches.open("frog-study-media-v1");
+    await Promise.allSettled(thumbUrls.map((url) => cache.add(url)));
+  } catch (_) {
+  }
+}
+
+els.shareButton.addEventListener("click", () => {
+  shareApp().catch(() => {});
+});
 els.closeDetail.addEventListener("click", () => els.detailDialog.close());
 els.detailDialog.addEventListener("click", (event) => {
   if (event.target === els.detailDialog) els.detailDialog.close();
 });
 els.nextQuiz.addEventListener("click", makeQuiz);
 
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("service-worker.js").catch(() => {});
+if ("serviceWorker" in navigator && window.location.protocol !== "file:") {
+  const rootScope = new URL("../", window.location.href).href;
+  const rootWorker = new URL("../service-worker.js", window.location.href).href;
+  navigator.serviceWorker.getRegistrations()
+    .then((registrations) => Promise.all(registrations
+      .filter((registration) => registration.scope !== rootScope)
+      .map((registration) => registration.unregister())))
+    .then(() => navigator.serviceWorker.register(rootWorker, { scope: rootScope }))
+    .then(() => warmOfflineThumbnails())
+    .catch(() => {});
 }
 
 renderAll();
+warmOfflineThumbnails();
