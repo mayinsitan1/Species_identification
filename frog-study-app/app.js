@@ -9,6 +9,7 @@ const state = {
   mastered: new Set(JSON.parse(localStorage.getItem("frog-mastered") || "[]")),
   favorites: new Set(JSON.parse(localStorage.getItem("frog-favorites") || "[]")),
 };
+let offlineWarmupScheduled = false;
 
 const speciesById = new Map(FROG_DATA.species.map((item) => [item.spid, item]));
 const families = [...new Map(FROG_DATA.species.map((item) => [item.family, item.familyLatin])).entries()]
@@ -506,17 +507,45 @@ async function shareApp() {
   }
 }
 
-async function warmOfflineThumbnails() {
-  if (!("caches" in window)) return;
-  const thumbUrls = [...new Set(FROG_DATA.species.flatMap((item) => [
+function uniqueThumbnailUrls() {
+  return [...new Set(FROG_DATA.species.flatMap((item) => [
     item.cover,
     ...item.photos.map((photo) => photo.thumb).filter(Boolean),
   ]).filter(Boolean))];
+}
+
+function runWhenIdle(task) {
+  if ("requestIdleCallback" in window) {
+    window.requestIdleCallback(task, { timeout: 6000 });
+    return;
+  }
+  window.setTimeout(task, 2500);
+}
+
+async function warmOfflineThumbnails() {
+  if (!("caches" in window)) return;
+  const thumbUrls = uniqueThumbnailUrls();
   try {
     const cache = await caches.open("frog-study-media-v1");
-    await Promise.allSettled(thumbUrls.map((url) => cache.add(url)));
+    const pending = [];
+    for (const url of thumbUrls) {
+      const request = new Request(url);
+      const cached = await cache.match(request);
+      if (!cached) pending.push(request);
+    }
+    for (let index = 0; index < pending.length; index += 4) {
+      await Promise.allSettled(pending.slice(index, index + 4).map((request) => cache.add(request)));
+      await new Promise((resolve) => window.setTimeout(resolve, 250));
+    }
   } catch (_) {
   }
+}
+
+function scheduleOfflineWarmup() {
+  if (window.location.protocol === "file:") return;
+  if (offlineWarmupScheduled) return;
+  offlineWarmupScheduled = true;
+  runWhenIdle(() => warmOfflineThumbnails());
 }
 
 els.shareButton.addEventListener("click", () => {
@@ -536,9 +565,9 @@ if ("serviceWorker" in navigator && window.location.protocol !== "file:") {
       .filter((registration) => registration.scope !== rootScope)
       .map((registration) => registration.unregister())))
     .then(() => navigator.serviceWorker.register(rootWorker, { scope: rootScope }))
-    .then(() => warmOfflineThumbnails())
+    .then(() => scheduleOfflineWarmup())
     .catch(() => {});
 }
 
 renderAll();
-warmOfflineThumbnails();
+scheduleOfflineWarmup();
